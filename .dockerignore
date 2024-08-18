@@ -1,0 +1,9 @@
+venv/
+.github/
+.git/
+.gitignore
+*.md
+test_*
+LICENSE
+Dockerfile
+.coverage*

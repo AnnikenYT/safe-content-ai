@@ -5,7 +5,7 @@ import hashlib
 import logging
 import aiohttp
 from fastapi import FastAPI, File, UploadFile, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from transformers import pipeline
 from transformers.pipelines import PipelineException
 from PIL import Image
@@ -53,6 +53,17 @@ async def download_image(image_url: str) -> bytes:
 def hash_data(data):
     """Function for hashing image data."""
     return hashlib.sha256(data).hexdigest()
+
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/v1/status")
+
+@app.get("/v1/status")
+async def status():
+    return JSONResponse(
+        status_code=200,
+        content={"status": "ok", "devices": { "using": DEVICE, "gpus": len(tf.config.list_physical_devices("GPU")), "cpus": len(tf.config.list_physical_devices("CPU"))}},
+    )
 
 
 @app.post("/v1/detect", response_model=FileImageDetectionResponse)
